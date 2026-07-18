@@ -2,52 +2,116 @@ import {
     db,
     doc,
     setDoc,
-    getDoc
+    getDoc,
+    serverTimestamp
 } from "./firebase.js";
 
-// Buttons
-const createBtn = document.getElementById("createAccountBtn");
+
+const createAccountBtn = document.getElementById("createAccountBtn");
 const loginBtn = document.getElementById("loginBtn");
 
-// Generate recovery code
+
 function generateCode() {
-    return "MEH-" + Math.floor(100000 + Math.random() * 900000);
+    const number = Math.floor(100000 + Math.random() * 900000);
+    return "MEH-" + number;
 }
 
-// Create account
-createBtn.onclick = async () => {
 
-    let name = prompt("Enter your display name:");
+// Create Account
 
-    if (!name) return;
+createAccountBtn.onclick = async () => {
 
-    let code = generateCode();
+    const name = prompt("Enter your name:");
 
-    // Make sure the code is unique
-    while ((await getDoc(doc(db, "users", code))).exists()) {
-        code = generateCode();
+    if (!name) {
+        alert("Name required");
+        return;
     }
 
-    await setDoc(doc(db, "users", code), {
-        name: name,
-        role: "member",
-        joined: new Date().toISOString()
-    });
+    const userCode = generateCode();
 
-    localStorage.setItem("mehUser", code);
+    try {
 
-    alert(
-`Account created!
+        await setDoc(doc(db, "users", userCode), {
+            Name: name,
+            Joined: serverTimestamp(),
+            Role: "Member"
+        });
 
-Your recovery code:
 
-${code}
+        alert(
+            "Account created!\n\nYour recovery code:\n" +
+            userCode +
+            "\n\nSave this code."
+        );
 
-SAVE THIS CODE!
-You will need it to log in on another device.`
-    );
+    } catch(error) {
 
-    location.reload();
+        console.error(error);
+        alert("Error creating account");
+
+    }
+
 };
 
-//
+
+
+// Sign In
+
+loginBtn.onclick = async () => {
+
+    const code = prompt("Enter your recovery code:");
+
+    if (!code) return;
+
+
+    try {
+
+        const userRef = doc(db, "users", code);
+        const userSnap = await getDoc(userRef);
+
+
+        if (userSnap.exists()) {
+
+            const userData = userSnap.data();
+
+
+            localStorage.setItem(
+                "userCode",
+                code
+            );
+
+
+            localStorage.setItem(
+                "userName",
+                userData.Name
+            );
+
+
+            localStorage.setItem(
+                "role",
+                userData.Role
+            );
+
+
+            alert(
+                "Welcome " + userData.Name +
+                "\nRole: " + userData.Role
+            );
+
+
+        } else {
+
+            alert("Invalid recovery code");
+
+        }
+
+
+    } catch(error) {
+
+        console.error(error);
+        alert("Login error");
+
+    }
+
+};
