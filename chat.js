@@ -59,27 +59,18 @@ function generateCode() {
 
 function showUser() {
 
-
-    const code =
-        localStorage.getItem("userCode");
-
-    const name =
-        localStorage.getItem("userName");
-
-    const role =
-        localStorage.getItem("role");
-
-    const isAdmin =
-        localStorage.getItem("isAdmin");
+    const code = localStorage.getItem("userCode");
+    const name = localStorage.getItem("userName");
+    const role = localStorage.getItem("role");
+    const isAdmin = localStorage.getItem("isAdmin");
 
 
-
-    console.log("Saved login:");
-    console.log("Code:", code);
-    console.log("Name:", name);
-    console.log("Role:", role);
-    console.log("isAdmin:", isAdmin);
-
+    console.log("Showing user:", {
+        code,
+        name,
+        role,
+        isAdmin
+    });
 
 
     if (code && name && role) {
@@ -101,23 +92,27 @@ function showUser() {
 
 
         userRoleText.textContent =
-            role +
-            (isAdmin === "true" ? " (Admin)" : "");
+            role;
 
 
 
         if (isAdmin === "true") {
 
-            createGroupBtn.style.display =
-                "block";
+            console.log("Admin detected - showing button");
+
+            createGroupBtn.style.display = "block";
+
+        } else {
+
+            console.log("Not admin");
+
+            createGroupBtn.style.display = "none";
 
         }
-
 
     }
 
 }
-
 
 
 
