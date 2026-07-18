@@ -1,16 +1,53 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
-import { getFirestore } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js";
+import {
+    db,
+    doc,
+    setDoc,
+    getDoc
+} from "./firebase.js";
 
-const firebaseConfig = {
-  apiKey: "AIzaSyDegsDsNmQHye0-A4zJXI_b5mGVhjzvy-c",
-  authDomain: "meh-chat-d78f5.firebaseapp.com",
-  projectId: "meh-chat-d78f5",
-  storageBucket: "meh-chat-d78f5.firebasestorage.app",
-  messagingSenderId: "187231270162",
-  appId: "1:187231270162:web:6ce37485f3bb6e18046fcb"
+// Buttons
+const createBtn = document.getElementById("createAccountBtn");
+const loginBtn = document.getElementById("loginBtn");
+
+// Generate recovery code
+function generateCode() {
+    return "MEH-" + Math.floor(100000 + Math.random() * 900000);
+}
+
+// Create account
+createBtn.onclick = async () => {
+
+    let name = prompt("Enter your display name:");
+
+    if (!name) return;
+
+    let code = generateCode();
+
+    // Make sure the code is unique
+    while ((await getDoc(doc(db, "users", code))).exists()) {
+        code = generateCode();
+    }
+
+    await setDoc(doc(db, "users", code), {
+        name: name,
+        role: "member",
+        joined: new Date().toISOString()
+    });
+
+    localStorage.setItem("mehUser", code);
+
+    alert(
+`Account created!
+
+Your recovery code:
+
+${code}
+
+SAVE THIS CODE!
+You will need it to log in on another device.`
+    );
+
+    location.reload();
 };
 
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-
-console.log("Firebase connected successfully!");
+//
