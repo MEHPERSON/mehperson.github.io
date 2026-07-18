@@ -2,8 +2,12 @@ import {
     db,
     doc,
     setDoc,
-    getDoc
+    getDoc,
+    collection,
+    addDoc,
+    serverTimestamp
 } from "./firebase.js";
+
 
 
 const createAccountBtn =
@@ -15,9 +19,9 @@ const loginBtn =
 const logoutBtn =
     document.getElementById("logoutBtn");
 
-
 const createGroupBtn =
     document.getElementById("createGroupBtn");
+
 
 
 const authCard =
@@ -26,9 +30,9 @@ const authCard =
 const userCard =
     document.getElementById("userCard");
 
-
 const groupsCard =
     document.getElementById("groupsCard");
+
 
 
 const welcomeText =
@@ -44,6 +48,8 @@ const userRoleText =
 
 
 
+// Generate user code
+
 function generateCode() {
 
     const number =
@@ -56,21 +62,38 @@ function generateCode() {
 
 
 
+// Generate group invite code
+
+function generateGroupCode() {
+
+    const number =
+        Math.floor(100000 + Math.random() * 900000);
+
+    return "GRP-" + number;
+
+}
+
+
+
+
+
+
 
 function showUser() {
 
-    const code = localStorage.getItem("userCode");
-    const name = localStorage.getItem("userName");
-    const role = localStorage.getItem("role");
-    const isAdmin = localStorage.getItem("isAdmin");
 
+    const code =
+        localStorage.getItem("userCode");
 
-    console.log("Showing user:", {
-        code,
-        name,
-        role,
-        isAdmin
-    });
+    const name =
+        localStorage.getItem("userName");
+
+    const role =
+        localStorage.getItem("role");
+
+    const isAdmin =
+        localStorage.getItem("isAdmin");
+
 
 
     if (code && name && role) {
@@ -83,12 +106,15 @@ function showUser() {
         groupsCard.style.display = "block";
 
 
+
         welcomeText.textContent =
             "Welcome back, " + name;
 
 
+
         userCodeText.textContent =
             code;
+
 
 
         userRoleText.textContent =
@@ -98,21 +124,21 @@ function showUser() {
 
         if (isAdmin === "true") {
 
-            console.log("Admin detected - showing button");
-
-            createGroupBtn.style.display = "block";
+            createGroupBtn.style.display =
+                "block";
 
         } else {
 
-            console.log("Not admin");
-
-            createGroupBtn.style.display = "none";
+            createGroupBtn.style.display =
+                "none";
 
         }
+
 
     }
 
 }
+
 
 
 
@@ -158,7 +184,7 @@ createAccountBtn.onclick = async () => {
 
 
     alert(
-        "Account created!\n\nYour code:\n" +
+        "Account created!\n\nYour recovery code:\n" +
         code
     );
 
@@ -182,6 +208,7 @@ loginBtn.onclick = async () => {
         prompt("Enter your recovery code");
 
 
+
     if (!code) return;
 
 
@@ -199,20 +226,6 @@ loginBtn.onclick = async () => {
 
         const data =
             userSnap.data();
-
-
-
-        console.log(
-            "USER DATA FROM FIRESTORE:",
-            data
-        );
-
-
-        console.log(
-            "ADMIN VALUE:",
-            data.isAdmin
-        );
-
 
 
 
@@ -236,7 +249,7 @@ loginBtn.onclick = async () => {
 
         localStorage.setItem(
             "isAdmin",
-            data.isAdmin
+            data.isAdmin || false
         );
 
 
@@ -248,7 +261,7 @@ loginBtn.onclick = async () => {
     } else {
 
 
-        alert("Invalid code");
+        alert("Invalid recovery code");
 
 
     }
@@ -264,17 +277,75 @@ loginBtn.onclick = async () => {
 
 
 
-// Create Group placeholder
+// Create Group
 
-if (createGroupBtn) {
+createGroupBtn.onclick = async () => {
 
-    createGroupBtn.onclick = () => {
 
-        alert("Create group system coming next");
+    const groupName =
+        prompt("Enter group name");
 
-    };
 
-}
+
+    if (!groupName) return;
+
+
+
+    const inviteCode =
+        generateGroupCode();
+
+
+
+    const groupRef =
+        await addDoc(
+            collection(db, "groups"),
+            {
+
+                name: groupName,
+
+
+                inviteCode: inviteCode,
+
+
+                ownerCode:
+                    localStorage.getItem("userCode"),
+
+
+                ownerName:
+                    localStorage.getItem("userName"),
+
+
+                members:
+                    [
+                        localStorage.getItem("userCode")
+                    ],
+
+
+                createdAt:
+                    serverTimestamp()
+
+            }
+        );
+
+
+
+    alert(
+        "Group created!\n\n" +
+        "Group name: " +
+        groupName +
+        "\n\nInvite code:\n" +
+        inviteCode
+    );
+
+
+
+    console.log(
+        "Group ID:",
+        groupRef.id
+    );
+
+
+};
 
 
 
@@ -291,7 +362,6 @@ logoutBtn.onclick = () => {
 
     localStorage.clear();
 
-
     location.reload();
 
 
@@ -304,5 +374,7 @@ logoutBtn.onclick = () => {
 
 
 
+
+// Check saved login
 
 showUser();
