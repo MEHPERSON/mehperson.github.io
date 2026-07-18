@@ -7,23 +7,30 @@
 
     <link rel="stylesheet" href="chat.css">
 </head>
+
 <body>
 
 <header>
     MEH Chat
 </header>
 
+
 <div class="container">
 
-    <div class="card">
+
+    <!-- Login / Register Card -->
+    <div class="card" id="authCard">
 
         <h2>Welcome</h2>
+
 
         <button id="createAccountBtn">
             Create New Account
         </button>
 
+
         <br><br>
+
 
         <button id="loginBtn">
             Sign In
@@ -31,9 +38,41 @@
 
     </div>
 
+
+
+
+    <!-- Logged In Card -->
+    <div class="card" id="userCard" style="display:none;">
+
+        <h2 id="welcomeText">
+            Welcome
+        </h2>
+
+
+        <p>
+            Code:
+            <span id="userCodeText"></span>
+        </p>
+
+
+        <p>
+            Role:
+            <span id="userRoleText"></span>
+        </p>
+
+
+        <button id="logoutBtn">
+            Logout
+        </button>
+
+    </div>
+
+
 </div>
 
+
 <script type="module" src="chat.js"></script>
+
 
 </body>
 </html>
