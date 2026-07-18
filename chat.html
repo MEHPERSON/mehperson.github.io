@@ -9,11 +9,54 @@
 </head>
 <body>
 
-    <h1>MEH Chat</h1>
+<header>
+    MEH Chat
+</header>
 
-    <p>This page will become our chat room.</p>
+<div class="container">
 
-    <script type="module" src="chat.js"></script>
+    <div class="card" id="loginBox">
+        <h2>Join Chat</h2>
+
+        <input
+            type="text"
+            id="username"
+            placeholder="Username">
+
+        <input
+            type="text"
+            id="userCode"
+            placeholder="Your Unique Code">
+
+        <input
+            type="text"
+            id="inviteCode"
+            placeholder="Group Invite Code">
+
+        <button id="joinBtn">
+            Join Chat
+        </button>
+    </div>
+
+    <div class="card" id="chatBox" style="display:none;">
+
+        <h2 id="groupName">Main Chat</h2>
+
+        <div id="messages"></div>
+
+        <input
+            id="messageInput"
+            placeholder="Type a message...">
+
+        <button id="sendBtn">
+            Send
+        </button>
+
+    </div>
+
+</div>
+
+<script type="module" src="chat.js"></script>
 
 </body>
 </html>
