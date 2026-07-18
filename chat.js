@@ -2,19 +2,33 @@ import {
     db,
     doc,
     setDoc,
-    getDoc,
-    serverTimestamp
+    getDoc
 } from "./firebase.js";
 
 
 const createAccountBtn = document.getElementById("createAccountBtn");
 const loginBtn = document.getElementById("loginBtn");
+const logoutBtn = document.getElementById("logoutBtn");
 
 
-// Generate MEH-XXXXXX code
+const authCard = document.getElementById("authCard");
+const userCard = document.getElementById("userCard");
+
+
+const welcomeText = document.getElementById("welcomeText");
+const userCodeText = document.getElementById("userCodeText");
+const userRoleText = document.getElementById("userRoleText");
+
+
+
+
+// Generate recovery code
+
 function generateCode() {
 
-    const number = Math.floor(100000 + Math.random() * 900000);
+    const number = Math.floor(
+        100000 + Math.random() * 900000
+    );
 
     return "MEH-" + number;
 
@@ -22,24 +36,59 @@ function generateCode() {
 
 
 
+
+// Show logged in user
+
+function showUser() {
+
+    const code = localStorage.getItem("userCode");
+    const name = localStorage.getItem("userName");
+    const role = localStorage.getItem("role");
+
+
+    if (code && name && role) {
+
+
+        authCard.style.display = "none";
+
+        userCard.style.display = "block";
+
+
+        welcomeText.textContent =
+            "Welcome back, " + name;
+
+
+        userCodeText.textContent = code;
+
+        userRoleText.textContent = role;
+
+
+    }
+
+}
+
+
+
+
 // Create Account
 
 createAccountBtn.onclick = async () => {
 
-    const name = prompt("Enter your name:");
 
-    if (!name) {
-        alert("Name required");
-        return;
-    }
+    const name = prompt("Enter your name");
 
 
-    const userCode = generateCode();
+    if (!name) return;
 
 
-    try {
 
-        await setDoc(doc(db, "users", userCode), {
+    const code = generateCode();
+
+
+
+    await setDoc(
+        doc(db, "users", code),
+        {
 
             joined: new Date().toISOString(),
 
@@ -47,106 +96,108 @@ createAccountBtn.onclick = async () => {
 
             role: "member"
 
-        });
+        }
+    );
 
 
-        alert(
-            "Account created!\n\n" +
-            "Your recovery code:\n" +
-            userCode +
-            "\n\nSave this code."
-        );
 
+    alert(
+        "Account created!\n\nYour code:\n" +
+        code
+    );
 
-    } catch (error) {
-
-        console.error(error);
-
-        alert("Error creating account");
-
-    }
 
 };
 
 
 
 
-// Sign In
+
+// Login
 
 loginBtn.onclick = async () => {
 
 
-    const code = prompt("Enter your recovery code:");
-
-    if (!code) {
-        return;
-    }
+    const code = prompt(
+        "Enter your recovery code"
+    );
 
 
-
-    try {
-
-
-        const userRef = doc(db, "users", code);
-
-        const userSnap = await getDoc(userRef);
+    if (!code) return;
 
 
 
-        if (userSnap.exists()) {
-
-
-            const userData = userSnap.data();
-
-
-
-            localStorage.setItem(
-                "userCode",
-                code
-            );
-
-
-            localStorage.setItem(
-                "userName",
-                userData.name
-            );
-
-
-            localStorage.setItem(
-                "role",
-                userData.role
-            );
+    const userSnap = await getDoc(
+        doc(db, "users", code)
+    );
 
 
 
-            alert(
-                "Welcome " +
-                userData.name +
-                "\nRole: " +
-                userData.role
-            );
+    if (userSnap.exists()) {
+
+
+        const data = userSnap.data();
 
 
 
-        } else {
+        localStorage.setItem(
+            "userCode",
+            code
+        );
 
 
-            alert("Invalid recovery code");
+        localStorage.setItem(
+            "userName",
+            data.name
+        );
 
 
-        }
+        localStorage.setItem(
+            "role",
+            data.role
+        );
 
 
 
-    } catch (error) {
+        showUser();
 
 
-        console.error(error);
 
-        alert("Login error");
+    } else {
+
+
+        alert("Invalid code");
 
 
     }
 
 
 };
+
+
+
+
+
+
+// Logout
+
+logoutBtn.onclick = () => {
+
+
+    localStorage.clear();
+
+
+    userCard.style.display = "none";
+
+    authCard.style.display = "block";
+
+
+};
+
+
+
+
+
+// Check saved login on page load
+
+showUser();
