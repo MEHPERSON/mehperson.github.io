@@ -37,13 +37,16 @@ function generateCode() {
 
 
 
+
 // Show logged in user
 
 function showUser() {
 
+
     const code = localStorage.getItem("userCode");
     const name = localStorage.getItem("userName");
     const role = localStorage.getItem("role");
+    const isAdmin = localStorage.getItem("isAdmin");
 
 
     if (code && name && role) {
@@ -60,12 +63,16 @@ function showUser() {
 
         userCodeText.textContent = code;
 
-        userRoleText.textContent = role;
+        userRoleText.textContent =
+            role +
+            (isAdmin === "true" ? " (Admin)" : "");
 
 
     }
 
 }
+
+
 
 
 
@@ -94,7 +101,9 @@ createAccountBtn.onclick = async () => {
 
             name: name,
 
-            role: "member"
+            role: "member",
+
+            isAdmin: false
 
         }
     );
@@ -108,6 +117,8 @@ createAccountBtn.onclick = async () => {
 
 
 };
+
+
 
 
 
@@ -127,9 +138,11 @@ loginBtn.onclick = async () => {
 
 
 
+
     const userSnap = await getDoc(
         doc(db, "users", code)
     );
+
 
 
 
@@ -158,6 +171,12 @@ loginBtn.onclick = async () => {
         );
 
 
+        localStorage.setItem(
+            "isAdmin",
+            data.isAdmin || false
+        );
+
+
 
         showUser();
 
@@ -166,13 +185,14 @@ loginBtn.onclick = async () => {
     } else {
 
 
-        alert("Invalid code");
+        alert("Invalid recovery code");
 
 
     }
 
 
 };
+
 
 
 
@@ -198,6 +218,8 @@ logoutBtn.onclick = () => {
 
 
 
-// Check saved login on page load
+
+
+// Check saved login
 
 showUser();
