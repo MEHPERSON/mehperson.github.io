@@ -11,10 +11,15 @@ const createAccountBtn = document.getElementById("createAccountBtn");
 const loginBtn = document.getElementById("loginBtn");
 
 
+// Generate MEH-XXXXXX code
 function generateCode() {
+
     const number = Math.floor(100000 + Math.random() * 900000);
+
     return "MEH-" + number;
+
 }
+
 
 
 // Create Account
@@ -28,26 +33,35 @@ createAccountBtn.onclick = async () => {
         return;
     }
 
+
     const userCode = generateCode();
+
 
     try {
 
         await setDoc(doc(db, "users", userCode), {
-            Name: name,
-            Joined: serverTimestamp(),
-            Role: "Member"
+
+            joined: new Date().toISOString(),
+
+            name: name,
+
+            role: "member"
+
         });
 
 
         alert(
-            "Account created!\n\nYour recovery code:\n" +
+            "Account created!\n\n" +
+            "Your recovery code:\n" +
             userCode +
             "\n\nSave this code."
         );
 
-    } catch(error) {
+
+    } catch (error) {
 
         console.error(error);
+
         alert("Error creating account");
 
     }
@@ -56,24 +70,34 @@ createAccountBtn.onclick = async () => {
 
 
 
+
 // Sign In
 
 loginBtn.onclick = async () => {
 
+
     const code = prompt("Enter your recovery code:");
 
-    if (!code) return;
+    if (!code) {
+        return;
+    }
+
 
 
     try {
 
+
         const userRef = doc(db, "users", code);
+
         const userSnap = await getDoc(userRef);
+
 
 
         if (userSnap.exists()) {
 
+
             const userData = userSnap.data();
+
 
 
             localStorage.setItem(
@@ -84,34 +108,45 @@ loginBtn.onclick = async () => {
 
             localStorage.setItem(
                 "userName",
-                userData.Name
+                userData.name
             );
 
 
             localStorage.setItem(
                 "role",
-                userData.Role
+                userData.role
             );
+
 
 
             alert(
-                "Welcome " + userData.Name +
-                "\nRole: " + userData.Role
+                "Welcome " +
+                userData.name +
+                "\nRole: " +
+                userData.role
             );
+
 
 
         } else {
 
+
             alert("Invalid recovery code");
+
 
         }
 
 
-    } catch(error) {
+
+    } catch (error) {
+
 
         console.error(error);
+
         alert("Login error");
 
+
     }
+
 
 };
