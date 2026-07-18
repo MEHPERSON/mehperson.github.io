@@ -2,12 +2,8 @@ import {
     db,
     doc,
     setDoc,
-    getDoc,
-    collection,
-    addDoc,
-    serverTimestamp
+    getDoc
 } from "./firebase.js";
-
 
 
 const createAccountBtn =
@@ -24,7 +20,6 @@ const createGroupBtn =
     document.getElementById("createGroupBtn");
 
 
-
 const authCard =
     document.getElementById("authCard");
 
@@ -34,7 +29,6 @@ const userCard =
 
 const groupsCard =
     document.getElementById("groupsCard");
-
 
 
 const welcomeText =
@@ -63,8 +57,6 @@ function generateCode() {
 
 
 
-
-
 function showUser() {
 
 
@@ -82,6 +74,14 @@ function showUser() {
 
 
 
+    console.log("Saved login:");
+    console.log("Code:", code);
+    console.log("Name:", name);
+    console.log("Role:", role);
+    console.log("isAdmin:", isAdmin);
+
+
+
     if (code && name && role) {
 
 
@@ -92,19 +92,17 @@ function showUser() {
         groupsCard.style.display = "block";
 
 
-
         welcomeText.textContent =
             "Welcome back, " + name;
-
 
 
         userCodeText.textContent =
             code;
 
 
-
         userRoleText.textContent =
-            role;
+            role +
+            (isAdmin === "true" ? " (Admin)" : "");
 
 
 
@@ -189,7 +187,6 @@ loginBtn.onclick = async () => {
         prompt("Enter your recovery code");
 
 
-
     if (!code) return;
 
 
@@ -207,6 +204,20 @@ loginBtn.onclick = async () => {
 
         const data =
             userSnap.data();
+
+
+
+        console.log(
+            "USER DATA FROM FIRESTORE:",
+            data
+        );
+
+
+        console.log(
+            "ADMIN VALUE:",
+            data.isAdmin
+        );
+
 
 
 
@@ -230,7 +241,7 @@ loginBtn.onclick = async () => {
 
         localStorage.setItem(
             "isAdmin",
-            data.isAdmin || false
+            data.isAdmin
         );
 
 
@@ -258,49 +269,17 @@ loginBtn.onclick = async () => {
 
 
 
-// Create Group (Admin only)
+// Create Group placeholder
 
-createGroupBtn.onclick = async () => {
+if (createGroupBtn) {
 
+    createGroupBtn.onclick = () => {
 
-    const name =
-        prompt("Enter group name");
+        alert("Create group system coming next");
 
+    };
 
-    if (!name) return;
-
-
-
-    const group =
-        await addDoc(
-            collection(db, "groups"),
-            {
-
-                name: name,
-
-                ownerCode:
-                    localStorage.getItem("userCode"),
-
-
-                ownerName:
-                    localStorage.getItem("userName"),
-
-
-                createdAt:
-                    serverTimestamp()
-
-            }
-        );
-
-
-
-    alert(
-        "Group created!\nID:\n" +
-        group.id
-    );
-
-
-};
+}
 
 
 
@@ -330,7 +309,5 @@ logoutBtn.onclick = () => {
 
 
 
-
-// Load saved login
 
 showUser();
