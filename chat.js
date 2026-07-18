@@ -2,33 +2,58 @@ import {
     db,
     doc,
     setDoc,
-    getDoc
+    getDoc,
+    collection,
+    addDoc,
+    serverTimestamp
 } from "./firebase.js";
 
 
-const createAccountBtn = document.getElementById("createAccountBtn");
-const loginBtn = document.getElementById("loginBtn");
-const logoutBtn = document.getElementById("logoutBtn");
+
+const createAccountBtn =
+    document.getElementById("createAccountBtn");
+
+const loginBtn =
+    document.getElementById("loginBtn");
+
+const logoutBtn =
+    document.getElementById("logoutBtn");
 
 
-const authCard = document.getElementById("authCard");
-const userCard = document.getElementById("userCard");
-
-
-const welcomeText = document.getElementById("welcomeText");
-const userCodeText = document.getElementById("userCodeText");
-const userRoleText = document.getElementById("userRoleText");
+const createGroupBtn =
+    document.getElementById("createGroupBtn");
 
 
 
+const authCard =
+    document.getElementById("authCard");
 
-// Generate recovery code
+const userCard =
+    document.getElementById("userCard");
+
+
+const groupsCard =
+    document.getElementById("groupsCard");
+
+
+
+const welcomeText =
+    document.getElementById("welcomeText");
+
+const userCodeText =
+    document.getElementById("userCodeText");
+
+const userRoleText =
+    document.getElementById("userRoleText");
+
+
+
+
 
 function generateCode() {
 
-    const number = Math.floor(
-        100000 + Math.random() * 900000
-    );
+    const number =
+        Math.floor(100000 + Math.random() * 900000);
 
     return "MEH-" + number;
 
@@ -38,15 +63,23 @@ function generateCode() {
 
 
 
-// Show logged in user
+
 
 function showUser() {
 
 
-    const code = localStorage.getItem("userCode");
-    const name = localStorage.getItem("userName");
-    const role = localStorage.getItem("role");
-    const isAdmin = localStorage.getItem("isAdmin");
+    const code =
+        localStorage.getItem("userCode");
+
+    const name =
+        localStorage.getItem("userName");
+
+    const role =
+        localStorage.getItem("role");
+
+    const isAdmin =
+        localStorage.getItem("isAdmin");
+
 
 
     if (code && name && role) {
@@ -56,16 +89,31 @@ function showUser() {
 
         userCard.style.display = "block";
 
+        groupsCard.style.display = "block";
+
+
 
         welcomeText.textContent =
             "Welcome back, " + name;
 
 
-        userCodeText.textContent = code;
+
+        userCodeText.textContent =
+            code;
+
+
 
         userRoleText.textContent =
-            role +
-            (isAdmin === "true" ? " (Admin)" : "");
+            role;
+
+
+
+        if (isAdmin === "true") {
+
+            createGroupBtn.style.display =
+                "block";
+
+        }
 
 
     }
@@ -77,19 +125,24 @@ function showUser() {
 
 
 
+
+
+
 // Create Account
 
 createAccountBtn.onclick = async () => {
 
 
-    const name = prompt("Enter your name");
+    const name =
+        prompt("Enter your name");
 
 
     if (!name) return;
 
 
 
-    const code = generateCode();
+    const code =
+        generateCode();
 
 
 
@@ -97,7 +150,8 @@ createAccountBtn.onclick = async () => {
         doc(db, "users", code),
         {
 
-            joined: new Date().toISOString(),
+            joined:
+                new Date().toISOString(),
 
             name: name,
 
@@ -124,14 +178,16 @@ createAccountBtn.onclick = async () => {
 
 
 
+
+
 // Login
 
 loginBtn.onclick = async () => {
 
 
-    const code = prompt(
-        "Enter your recovery code"
-    );
+    const code =
+        prompt("Enter your recovery code");
+
 
 
     if (!code) return;
@@ -139,17 +195,18 @@ loginBtn.onclick = async () => {
 
 
 
-    const userSnap = await getDoc(
-        doc(db, "users", code)
-    );
-
+    const userSnap =
+        await getDoc(
+            doc(db, "users", code)
+        );
 
 
 
     if (userSnap.exists()) {
 
 
-        const data = userSnap.data();
+        const data =
+            userSnap.data();
 
 
 
@@ -185,13 +242,67 @@ loginBtn.onclick = async () => {
     } else {
 
 
-        alert("Invalid recovery code");
+        alert("Invalid code");
 
 
     }
 
 
 };
+
+
+
+
+
+
+
+
+
+// Create Group (Admin only)
+
+createGroupBtn.onclick = async () => {
+
+
+    const name =
+        prompt("Enter group name");
+
+
+    if (!name) return;
+
+
+
+    const group =
+        await addDoc(
+            collection(db, "groups"),
+            {
+
+                name: name,
+
+                ownerCode:
+                    localStorage.getItem("userCode"),
+
+
+                ownerName:
+                    localStorage.getItem("userName"),
+
+
+                createdAt:
+                    serverTimestamp()
+
+            }
+        );
+
+
+
+    alert(
+        "Group created!\nID:\n" +
+        group.id
+    );
+
+
+};
+
+
 
 
 
@@ -207,9 +318,7 @@ logoutBtn.onclick = () => {
     localStorage.clear();
 
 
-    userCard.style.display = "none";
-
-    authCard.style.display = "block";
+    location.reload();
 
 
 };
@@ -220,6 +329,8 @@ logoutBtn.onclick = () => {
 
 
 
-// Check saved login
+
+
+// Load saved login
 
 showUser();
