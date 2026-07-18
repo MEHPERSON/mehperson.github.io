@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,17 +9,20 @@
     <link rel="stylesheet" href="chat.css">
 </head>
 
+
 <body>
+
 
 <header>
     MEH Chat
 </header>
 
 
+
 <div class="container">
 
 
-    <!-- Login / Register Card -->
+    <!-- Login Card -->
     <div class="card" id="authCard">
 
         <h2>Welcome</h2>
@@ -41,12 +45,15 @@
 
 
 
-    <!-- Logged In Card -->
+
+    <!-- User Card -->
     <div class="card" id="userCard" style="display:none;">
+
 
         <h2 id="welcomeText">
             Welcome
         </h2>
+
 
 
         <p>
@@ -55,20 +62,58 @@
         </p>
 
 
+
         <p>
             Role:
             <span id="userRoleText"></span>
         </p>
 
 
+
+
+        <button id="createGroupBtn" style="display:none;">
+            Create Group
+        </button>
+
+
+
+        <br><br>
+
+
+
         <button id="logoutBtn">
             Logout
         </button>
 
+
+
     </div>
 
 
+
+
+
+    <!-- Groups Area -->
+
+    <div class="card" id="groupsCard" style="display:none;">
+
+
+        <h2>
+            Groups
+        </h2>
+
+
+        <div id="groupList">
+
+        </div>
+
+
+    </div>
+
+
+
 </div>
+
 
 
 <script type="module" src="chat.js"></script>
