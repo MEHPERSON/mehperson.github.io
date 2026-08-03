@@ -126,22 +126,30 @@
       background: rgba(255, 255, 255, 0.05);
     }
 
-    /* Hero */
+    /* Hero — two column on desktop */
     .hero {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 48px;
+      align-items: start;
+      margin-top: 32px;
+      margin-bottom: -50px;
+    }
+
+    .hero-left {
       display: flex;
       flex-direction: column;
       gap: 24px;
-      margin-top: 32px;
     }
 
-    .hero h2 {
+    .hero-left h2 {
       font-size: 3.25rem;
       line-height: 1.15;
       font-weight: 700;
       color: var(--text);
     }
 
-    .hero p {
+    .hero-left p {
       color: var(--muted);
       line-height: 1.8;
       font-size: 1.2rem;
@@ -151,18 +159,19 @@
       display: flex;
       flex-direction: column;
       align-items: flex-start;
-      gap: 24px;
+      gap: 75px;
       margin-top: 16px;
     }
 
-    .find-me span {
+    .find-me > span {
       color: var(--muted);
-      font-size: 0.875rem;
+      font-size: 1rem;
+      font-weight: 600;
     }
 
     .social-icons {
       display: flex;
-      gap: 28px;
+      gap: 36px;
       flex-wrap: wrap;
     }
 
@@ -170,7 +179,7 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 8px;
+      gap: 10px;
       color: var(--muted);
       text-decoration: none;
       transition: color 0.2s ease, transform 0.2s ease;
@@ -182,13 +191,96 @@
     }
 
     .social-icons svg {
-      width: 22px;
-      height: 22px;
+      width: 40px;
+      height: 40px;
     }
 
     .social-icons span {
-      font-size: 0.8rem;
-      font-weight: 500;
+      font-size: 0.95rem;
+      font-weight: 600;
+    }
+
+    /* Terminal */
+    .terminal {
+      background: #141414;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+      font-size: 0.82rem;
+      width: 100%;
+      max-width: 560px;
+      margin-top: 72px;
+    }
+
+    .terminal-bar {
+      background: #222;
+      padding: 10px 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .dot { width: 10px; height: 10px; border-radius: 50%; }
+    .dot-r { background: #ff5f57; }
+    .dot-y { background: #febc2e; }
+    .dot-g { background: #28c840; }
+
+    .terminal-title {
+      margin-left: auto;
+      margin-right: auto;
+      font-size: 0.72rem;
+      color: var(--muted);
+      letter-spacing: 0.05em;
+    }
+
+    .terminal-body {
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      line-height: 1.7;
+      height: 300px;      
+      overflow-y: auto;  
+    }
+    .terminal-body::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .terminal-body::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    .terminal-body::-webkit-scrollbar-thumb {
+      background: rgba(180, 233, 255, 0.25);
+      border-radius: 999px;
+    }
+
+    .terminal-body::-webkit-scrollbar-thumb:hover {
+      background: rgba(180, 233, 255, 0.45);
+    }
+
+    .t-line { display: flex; gap: 8px; }
+    .t-prompt { color: var(--accent); flex-shrink: 0; }
+    .t-cmd { color: var(--text); }
+    .t-out { color: var(--muted); }
+    .t-out.green { color: #4ade80; }
+    .t-out.accent { color: var(--accent); }
+    .t-blank { height: 6px; }
+
+    .t-cursor {
+      display: inline-block;
+      width: 8px;
+      height: 14px;
+      background: var(--accent);
+      vertical-align: middle;
+      margin-left: 2px;
+      animation: blink 1s step-end infinite;
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0; }
     }
 
     /* Gaming section */
@@ -347,23 +439,36 @@
         font-size: 0.9rem;
       }
 
+      /* Stack hero to single column on mobile */
       .hero {
-        gap: 20px;
-        margin-top: 32px;
+        grid-template-columns: 1fr;
+        gap: 32px;
+        margin-top: 24px;
+        margin-bottom: -12px;
       }
 
-      .hero h2 {
+      .hero-left h2 {
         font-size: 2.3rem;
       }
 
-      .hero p {
+      .hero-left p {
         font-size: 1rem;
         line-height: 1.6;
       }
 
       .find-me {
-        flex-wrap: wrap;
-        gap: 12px;
+        gap: 36px;
+      }
+
+      /* Terminal shrinks to full width on mobile */
+      .terminal {
+        font-size: 0.78rem;
+        margin-top: 24px;
+      }
+
+      .terminal-body {
+        padding: 16px;
+        min-height: unset;
       }
 
       .gaming-item {
@@ -421,43 +526,59 @@
   </header>
 
   <div class="hero">
-    <h2>About Me</h2>
-    <p>Hey! I'm MEHPERSON. Welcome to my personal page.</p>
-    <div class="find-me">
-      <span>Find me on</span>
-      <div class="social-icons">
 
-        <a href="https://github.com/MEHPERSON" target="_blank" title="GitHub">
-          <svg viewBox="0 0 24 24" fill="currentColor">
-            <path d="M12 0C5.37 0 0 5.37 0 12c0 5.3 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61-.546-1.385-1.335-1.755-1.335-1.755-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 21.795 24 17.295 24 12c0-6.63-5.37-12-12-12z"/>
-          </svg>
-          <span>GitHub</span>
-        </a>
+    <!-- Left: About text + socials -->
+    <div class="hero-left">
+      <h2>About Me</h2>
+      <p>Hey! I'm MEHPERSON. Welcome to my personal page.</p>
+      <div class="find-me">
+        <span>Find me on</span>
+        <div class="social-icons">
 
-        <a href="https://www.linkedin.com/in/mehperson-%E2%80%8C%E2%80%8C%E2%80%8C-748241363/" target="_blank" title="LinkedIn">
-          <svg viewBox="0 0 24 24" fill="currentColor">
-            <path d="M4.98 3.5C4.98 4.88 3.86 6 2.48 6S0 4.88 0 3.5 1.12 1 2.48 1s2.5 1.12 2.5 2.5zM0 8h5v16H0V8zm7.5 0H12v2.2h.1c.6-1.1 2.1-2.2 4.4-2.2 4.7 0 5.5 3.1 5.5 7.1V24h-5v-7.1c0-1.7 0-3.9-2.4-3.9s-2.8 1.9-2.8 3.8V24h-5V8z"/>
-          </svg>
-          <span>LinkedIn</span>
-        </a>
+          <a href="https://github.com/MEHPERSON" target="_blank" title="GitHub">
+            <svg viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 0C5.37 0 0 5.37 0 12c0 5.3 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61-.546-1.385-1.335-1.755-1.335-1.755-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 21.795 24 17.295 24 12c0-6.63-5.37-12-12-12z"/>
+            </svg>
+            <span>GitHub</span>
+          </a>
 
-        <a href="https://x.com/MEHPERSON69" target="_blank" title="X">
-          <svg viewBox="0 0 24 24" fill="currentColor">
-            <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.746l7.73-8.835L2.25 2.25h6.978l4.259 5.632 4.757-5.632zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
-          </svg>
-          <span>X</span>
-        </a>
+          <a href="https://www.linkedin.com/in/mehperson-%E2%80%8C%E2%80%8C%E2%80%8C-748241363/" target="_blank" title="LinkedIn">
+            <svg viewBox="0 0 24 24" fill="currentColor">
+              <path d="M4.98 3.5C4.98 4.88 3.86 6 2.48 6S0 4.88 0 3.5 1.12 1 2.48 1s2.5 1.12 2.5 2.5zM0 8h5v16H0V8zm7.5 0H12v2.2h.1c.6-1.1 2.1-2.2 4.4-2.2 4.7 0 5.5 3.1 5.5 7.1V24h-5v-7.1c0-1.7 0-3.9-2.4-3.9s-2.8 1.9-2.8 3.8V24h-5V8z"/>
+            </svg>
+            <span>LinkedIn</span>
+          </a>
 
-        <a href="#" onclick="copyText('M3HPERSON@gmail.com', 'Email copied!'); return false;" title="Email">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <rect x="2" y="4" width="20" height="16" rx="2"/>
-            <path d="M22 7l-9 6-9-6"/>
-          </svg>
-          <span>Email</span>
-        </a>
+          <a href="https://x.com/MEHPERSON69" target="_blank" title="X">
+            <svg viewBox="0 0 24 24" fill="currentColor">
+              <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.746l7.73-8.835L2.25 2.25h6.978l4.259 5.632 4.757-5.632zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+            </svg>
+            <span>X</span>
+          </a>
 
+          <a href="#" onclick="copyText('M3HPERSON@gmail.com', 'Email copied!'); return false;" title="Email">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="2" y="4" width="20" height="16" rx="2"/>
+              <path d="M22 7l-9 6-9-6"/>
+            </svg>
+            <span>Email</span>
+          </a>
+
+        </div>
       </div>
     </div>
+
+
+    <div class="terminal">
+      <div class="terminal-bar">
+        <span class="dot dot-r"></span>
+        <span class="dot dot-y"></span>
+        <span class="dot dot-g"></span>
+        <span class="terminal-title">mehperson ~ bash</span>
+      </div>
+      <div class="terminal-body" id="term-body" tabindex="0"></div>
+    </div>
+
   </div>
 
   <section>
@@ -501,7 +622,7 @@
 <div id="toast"></div>
 
 <script>
-  // Theme
+  // ── Theme ──
   const sunSVG = `
     <circle cx="12" cy="12" r="5"/>
     <line x1="12" y1="1" x2="12" y2="3"/>
@@ -542,7 +663,7 @@
     applyTheme();
   }
 
-  // Toast
+  // ── Toast ──
   function copyText(text, msg) {
     navigator.clipboard.writeText(text);
     const toast = document.getElementById('toast');
@@ -551,7 +672,7 @@
     setTimeout(() => toast.classList.remove('show'), 2000);
   }
 
-  // Particles
+  // ── Particles ──
   let particles = [], animFrame, canvas, ctx;
 
   function initParticles() {
@@ -610,7 +731,231 @@
     animFrame = requestAnimationFrame(loop);
   }
 
+  // ── Terminal typewriter ──
+  const introLines = [
+        { type: "cmd", text: "whoami" },
+    { type: "out", text: "Mehperson" },
+
+    { type: "blank" },
+
+    { type: "cmd", text: "cat about.txt" },
+    { type: "out", text: "User              : MEH" },
+    { type: "out", text: "Role              : Student" },
+    { type: "out", text: "Favorite Game     : Clair Obscure Expedition 33" },
+    { type: "out", text: "                    Minecraft" },
+    { type: "out", text: "Location          : Chattogram, BD" },
+
+    { type: "blank" },
+
+    { type: "cmd", text: "ls skills" },
+    { type: "out", text: "python", accent: true },
+    { type: "out", text: "figma", accent: true },
+    { type: "out", text: "html (learning)", accent: true },
+    { type: "out", text: "minecraft", accent: true },
+
+    { type: "blank" },
+
+    { type: "cmd", text: "cat now.txt" },
+    { type: "out", text: "> Studying for SSC exams", green: true },
+    { type: "out", text: "> Learning HTML and Web Development", green: true },
+    { type: "out", text: "> Open to collabs", green: true },
+
+    { type: "blank" },
+
+    { type: "cursor" }
+  ];
+
+  const termBody = document.getElementById('term-body');
+  let lineIdx = 0, charIdx = 0;
+
+  function typeNext() {
+    if (lineIdx >= introLines.length) return;
+    const line = introLines[lineIdx];
+
+    if (line.type === 'blank') {
+      const el = document.createElement('div');
+      el.className = 't-blank';
+      termBody.appendChild(el);
+      lineIdx++;
+      setTimeout(typeNext, 60);
+      return;
+    }
+
+    if (line.type === 'cursor') {
+
+      const el = document.createElement('div');
+      el.className = 't-line';
+
+      el.innerHTML = `
+        <span class="t-prompt">$</span>
+        <span class="t-cmd"></span>
+        <span class="t-cursor"></span>
+      `;
+
+      termBody.appendChild(el);
+
+      currentCmd = el.querySelector(".t-cmd");
+
+      terminalReady = true;
+
+      termBody.focus();
+
+      return;
+    }
+
+    if (line.type === 'out') {
+      const el = document.createElement('div');
+      el.className = 't-line';
+      const out = document.createElement('span');
+      out.className = 't-out' + (line.accent ? ' accent' : '') + (line.green ? ' green' : '');
+      out.textContent = line.text;
+      el.appendChild(out);
+      termBody.appendChild(el);
+      lineIdx++;
+      setTimeout(typeNext, 40);
+      return;
+    }
+
+    if (line.type === 'cmd') {
+      if (charIdx === 0) {
+        const el = document.createElement('div');
+        el.className = 't-line';
+        el.dataset.idx = lineIdx;
+        el.innerHTML = `<span class="t-prompt">$</span><span class="t-cmd"></span>`;
+        termBody.appendChild(el);
+      }
+      const el = termBody.querySelector(`[data-idx="${lineIdx}"] .t-cmd`);
+      if (charIdx < line.text.length) {
+        el.textContent = line.text.slice(0, charIdx + 1);
+        charIdx++;
+        setTimeout(typeNext, 55);
+      } else {
+        charIdx = 0;
+        lineIdx++;
+        setTimeout(typeNext, 180);
+      }
+    }
+  }
+let terminalReady = false;
+let currentInput = "";
+let currentCmd = null;
+
+termBody.addEventListener("keydown", (e) => {
+
+    if (!terminalReady) return;
+
+    if (e.key.length === 1 && !e.ctrlKey && !e.metaKey) {
+        e.preventDefault();
+        currentInput += e.key;
+        currentCmd.textContent = currentInput;
+    }
+
+    if (e.key === "Backspace") {
+      e.preventDefault();
+      currentInput = currentInput.slice(0, -1);
+      currentCmd.textContent = currentInput;
+    }
+
+
+    if (e.key === "Enter") {
+      e.preventDefault();
+
+      let command = currentInput.trim();
+
+      executeCommand(command);
+      // remove old cursor
+      const oldCursor = document.querySelectorAll(".t-cursor");
+      oldCursor.forEach(c => c.remove());
+      currentInput = "";
+
+      // create new input line
+      const el = document.createElement("div");
+      el.className = "t-line";
+
+      el.innerHTML = `
+          <span class="t-prompt">$</span>
+          <span class="t-cmd"></span>
+          <span class="t-cursor"></span>
+      `;
+
+      termBody.appendChild(el);
+
+      currentCmd = el.querySelector(".t-cmd");
+
+    }
+
+});
+
+function executeCommand(command) {
+
+    const el = document.createElement("div");
+    el.className = "t-line";
+
+    const out = document.createElement("span");
+    out.className = "t-out";
+
+
+    switch(command.toLowerCase()) {
+
+        case "help":
+            out.innerHTML = `
+                Available commands<br>
+                help<br>
+                whoami<br>
+                skills<br>
+                now<br>
+                MEH<br>
+                clear
+            `;
+            break;
+
+
+        case "whoami":
+            out.textContent = "MEH PERSON";
+            break;
+
+
+        case "skills":
+            out.innerHTML = `
+                HTML<br>
+                CSS<br>
+                JavaScript<br>
+                Firebase
+            `;
+            break;
+
+
+        case "now":
+            out.textContent = "Building my terminal portfolio";
+            break;
+
+
+        case "meh":
+            out.textContent = "MEH — personal web project";
+            break;
+
+
+        case "clear":
+            termBody.innerHTML = "";
+            return;
+
+
+        case "":
+            return;
+
+
+        default:
+            out.textContent = `bash: ${command}: command not found`;
+
+    }
+
+    el.appendChild(out);
+    termBody.appendChild(el);
+  }
+
+  // Start everything
   applyTheme();
+  setTimeout(typeNext, 400);
 </script>
 </body>
 </html>
