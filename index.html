@@ -261,27 +261,88 @@
     }
 
     .t-line { display: flex; gap: 8px; }
-    .t-prompt { color: var(--accent); flex-shrink: 0; }
+    .t-prompt { color: var(--accent); font-weight: 600; flex-shrink: 0; }
     .t-cmd { color: var(--text); }
-    .t-out { color: var(--muted); }
+    .t-out {color: var(--muted); white-space: pre;}
     .t-out.green { color: #4ade80; }
+    .t-out.red {color: #ff6b6b;}
     .t-out.accent { color: var(--accent); }
     .t-blank { height: 6px; }
-
-    .t-cursor {
-      display: inline-block;
-      width: 8px;
-      height: 14px;
-      background: var(--accent);
-      vertical-align: middle;
-      margin-left: 2px;
-      animation: blink 1s step-end infinite;
+    .t-line {
+    display: flex;
+    align-items: center;
     }
-
-    @keyframes blink {
+    .t-cursor {
+    display: inline-block;
+    width: 8px;
+    height: 1em;
+    background: #bfe9ff;
+    margin-left: 2px;
+    vertical-align: -2px;
+    animation: blink 1s steps(1) infinite;
+    }
+     @keyframes blink {
       0%, 100% { opacity: 1; }
       50% { opacity: 0; }
     }
+    .t-label {
+    color: var(--muted);
+    }
+
+    .t-value {
+    color: var(--text);
+    }
+
+    .rgb-ascii {
+    white-space: pre;
+    font-family: inherit;
+    font-size: 0.9rem;
+    line-height: 1.15;
+    font-weight: 700;
+
+    background: linear-gradient(
+        90deg,
+        #ff4d4d,
+        #ffb84d,
+        #ffee4d,
+        #4dff88,
+        #4dd2ff,
+        #7a5cff,
+        #ff4dc4,
+        #ff4d4d
+    );
+
+    background-size: 400% 100%;
+
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+
+    animation:
+        rainbowShift 8s linear infinite,
+        breathe 3s ease-in-out infinite;
+}
+
+@keyframes rainbowShift {
+    from {
+        background-position: 0%;
+    }
+    to {
+        background-position: 400%;
+    }
+}
+
+@keyframes breathe {
+    0%,100% {
+        transform: scale(1);
+        opacity: .85;
+    }
+
+    50% {
+        transform: scale(1.02);
+        opacity: 1;
+    }
+}
+
 
     /* Gaming section */
     section {
@@ -797,8 +858,10 @@
       currentCmd = el.querySelector(".t-cmd");
 
       terminalReady = true;
+      
+      resetIdleTimer();
 
-      termBody.focus();
+      requestAnimationFrame(() => termBody.focus());
 
       return;
     }
@@ -836,13 +899,22 @@
       }
     }
   }
+
+let history = [];
+let historyIndex = -1;
 let terminalReady = false;
 let currentInput = "";
 let currentCmd = null;
+let idleTimer;
+const IDLE_TIMEOUT = 15000; // 15 seconds
 
 termBody.addEventListener("keydown", (e) => {
 
     if (!terminalReady) return;
+
+    resetIdleTimer();
+    termBody.addEventListener("mousemove", resetIdleTimer);
+    termBody.addEventListener("click", resetIdleTimer); 
 
     if (e.key.length === 1 && !e.ctrlKey && !e.metaKey) {
         e.preventDefault();
@@ -856,103 +928,285 @@ termBody.addEventListener("keydown", (e) => {
       currentCmd.textContent = currentInput;
     }
 
-
     if (e.key === "Enter") {
-      e.preventDefault();
+    e.preventDefault();
 
-      let command = currentInput.trim();
+    const cmd = currentInput.trim();
 
-      executeCommand(command);
-      // remove old cursor
-      const oldCursor = document.querySelectorAll(".t-cursor");
-      oldCursor.forEach(c => c.remove());
-      currentInput = "";
-
-      // create new input line
-      const el = document.createElement("div");
-      el.className = "t-line";
-
-      el.innerHTML = `
-          <span class="t-prompt">$</span>
-          <span class="t-cmd"></span>
-          <span class="t-cursor"></span>
-      `;
-
-      termBody.appendChild(el);
-
-      currentCmd = el.querySelector(".t-cmd");
-
+    if (cmd !== "") {
+        history.push(cmd);
+        historyIndex = history.length;
     }
+
+    executeCommand(cmd);
+    }
+
+    if (e.key === "ArrowUp") {
+
+    e.preventDefault();
+
+    if (historyIndex > 0) {
+        historyIndex--;
+        currentInput = history[historyIndex];
+        currentCmd.textContent = currentInput;
+    }
+
+}
+
+    if (e.key === "ArrowDown") {
+
+        e.preventDefault();
+
+    if (historyIndex < history.length - 1) {
+         historyIndex++;
+         currentInput = history[historyIndex];
+     } else {
+        historyIndex = history.length;
+       currentInput = "";
+       }
+
+     currentCmd.textContent = currentInput;
+
+}
+    if (e.key === "Tab") {
+
+    e.preventDefault();
+
+    const commands = [
+        "help",
+        "whoami",
+        "skills",
+        "ls skills/",
+        "now",
+        "cat about.txt",
+        "cat now.txt",
+        "cat now.txt",
+        "cat contact.txt",
+        "MEH",
+        "clear"
+    ];
+
+    const match = commands.find(c =>
+        c.toLowerCase().startsWith(currentInput.toLowerCase())
+    );
+
+    if (match) {
+        currentInput = match;
+        currentCmd.textContent = currentInput;
+    }
+
+}
+
 
 });
+function executeCommand(cmd) {
 
-function executeCommand(command) {
+    // Remove old cursor
+    const cursor = document.querySelector(".t-cursor");
+    if (cursor) cursor.remove();
 
-    const el = document.createElement("div");
-    el.className = "t-line";
+    switch (cmd.toLowerCase()) {
 
-    const out = document.createElement("span");
-    out.className = "t-out";
+    case "help":
+
+        printOutput("Available commands");
+        printOutput("──────────────────");
+        printOutput("help");
+        printOutput("whoami");
+        printCommand("cat about.txt");
+        printOutput("skills");
+        printCommand("ls skills/");
+        printOutput("now");
+        printCommand("cat now.txt");
+        printOutput('Try "ls" to explore.');
+        printOutput("clear");
+        break;
+
+    case "whoami":
+
+        printOutput("Mehperson");
+
+        break;
+    case "cat about.txt":
+
+    printOutput("User              : MEH");
+    printOutput("Role              : Student");
+    printOutput("Favorite Games    : Clair Obscure: Expedition 33");
+    printOutput("                   Minecraft");
+    printOutput("Location          : Chattogram, BD");
+
+        break;
+
+    case "skills":
+    case "ls skills":
+    case "ls skills/":
+
+        printOutput("python", "accent");
+        printOutput("figma", "accent");
+        printOutput("html (learning)", "accent");
+        printOutput("minecraft", "accent");
+
+        break;
+
+    case "now":
+    case "cat now.txt":
+
+        printOutput("> Studying for SSC exams", "green");
+        printOutput("> Learning HTML and Web Development", "green");
+        printOutput("> Open to collabs", "green");
+
+        break;
+    case "ls":
+
+    printTree("├── about.txt");
+    printTree("├── now.txt");
+    printTree("├── contact.txt");
+    printTree("└── skills/");
+
+        break;
+    case "cat contact.txt":
+
+    printOutput("GitHub  : github.com/mehperson");
+    printOutput("x       : x.com/MEHPERSON69");
+    printOutput("Email   : M3HPERSON@gmail.com");
+
+        break;
+  
+    
+    case "clear":
+
+    termBody.innerHTML = "";
+    newPrompt();
+    return;
+
+    default:
+
+        printOutput("Command not found.", "red");
+        printOutput('Type "help" for available commands.');
+      }
+
+    newPrompt();
+    termBody.focus();
+
+}
+function printOutput(text, color = "") {
 
 
-    switch(command.toLowerCase()) {
+    const line = document.createElement("div");
+    line.className = "t-line";
 
-        case "help":
-            out.innerHTML = `
-                Available commands<br>
-                help<br>
-                whoami<br>
-                skills<br>
-                now<br>
-                MEH<br>
-                clear
-            `;
-            break;
+    const span = document.createElement("span");
+    span.className = "t-out";
 
+    if (color)
+        span.classList.add(color);
 
-        case "whoami":
-            out.textContent = "Mehperson";
-            break;
+    span.textContent = text;
 
+    line.appendChild(span);
 
-        case "skills":
-            out.innerHTML = `
-                python<br>
-                figma<br>
-                html(learing)<br>
-                minecraft
-                
-            `;
-            break;
+    termBody.appendChild(line);
 
+}
 
-        case "now":
-            out.textContent = "Building my own website to learn html";
-            break;
+function printAscii(text) {
 
+    const line = document.createElement("div");
 
-        case "meh":
-            out.textContent = "MEH — my favourite word";
-            break;
+    line.className = "rgb-ascii";
 
+    line.textContent = text;
 
-        case "clear":
-            termBody.innerHTML = "";
-            return;
+    termBody.appendChild(line);
 
+}
 
-        case "":
-            return;
+function printDirectory(text) {
 
+    const line = document.createElement("div");
+    line.className = "t-line";
 
-        default:
-            out.textContent = `bash: ${command}: command not found`;
+    const span = document.createElement("span");
+    span.className = "t-out accent";
 
-    }
+    span.textContent = text;
 
-    el.appendChild(out);
-    termBody.appendChild(el);
-  }
+    line.appendChild(span);
+
+    termBody.appendChild(line);
+
+}
+
+function printTree(text, isDirectory = false) {
+
+    const line = document.createElement("div");
+    line.className = "t-line";
+
+    const span = document.createElement("span");
+    span.className = isDirectory
+        ? "t-out accent"
+        : "t-out";
+
+    span.textContent = text;
+
+    line.appendChild(span);
+    termBody.appendChild(line);
+}
+
+function printCommand(text) {
+
+    const line = document.createElement("div");
+    line.className = "t-line";
+
+    const span = document.createElement("span");
+    span.className = "t-out accent";
+
+    span.textContent = text;
+
+    line.appendChild(span);
+
+    termBody.appendChild(line);
+
+}
+
+function newPrompt() {
+
+    const line = document.createElement("div");
+
+    line.className = "t-line";
+
+    line.innerHTML = `
+        <span class="t-prompt">$</span>
+        <span class="t-cmd"></span>
+        <span class="t-cursor"></span>
+    `;
+
+    termBody.appendChild(line);
+
+    currentCmd = line.querySelector(".t-cmd");
+    currentInput = "";
+    requestAnimationFrame(() => termBody.focus());
+    termBody.scrollTop = termBody.scrollHeight;
+
+}
+function resetIdleTimer() {
+    clearTimeout(idleTimer);
+    idleTimer = setTimeout(resetTerminal, IDLE_TIMEOUT);
+}
+
+function resetTerminal() {
+
+    terminalReady = false;
+
+    termBody.innerHTML = "";
+
+    lineIdx = 0;
+    charIdx = 0;
+
+    currentInput = "";
+
+    typeNext();
+}
 
   // Start everything
   applyTheme();
