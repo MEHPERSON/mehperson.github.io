@@ -1139,12 +1139,7 @@ function executeCommand(cmd) {
         printOutput('Type "help" for available commands.');
       }
 
-    newPrompt();
-    if ("ontouchstart" in window) {
-    terminalInput.focus({ preventScroll: true });
-      } else {
-    termBody.focus({ preventScroll: true });
-      }
+newPrompt();
 
 }
 function printOutput(text, color = "") {
