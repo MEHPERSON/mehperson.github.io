@@ -1238,13 +1238,7 @@ function newPrompt() {
 
     currentCmd = line.querySelector(".t-cmd");
     currentInput = "";
-    requestAnimationFrame(() => {
-    if ("ontouchstart" in window) {
-        terminalInput.focus({ preventScroll: true });
-    } else {
-        termBody.focus({ preventScroll: true });
-    }
-});
+    
     if (!("ontouchstart" in window)) {
     requestAnimationFrame(() => {
     termBody.scrollTo({
