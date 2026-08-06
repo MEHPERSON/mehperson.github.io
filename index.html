@@ -927,7 +927,7 @@ let currentCmd = null;
 let idleTimer;
 const IDLE_TIMEOUT = 15000; // 15 seconds
 
-termBody.addEventListener("keydown", (e) => {
+function handleKey(e) {
 
     if (!terminalReady) return;
 
@@ -1017,7 +1017,20 @@ termBody.addEventListener("keydown", (e) => {
 }
 
 
+}
+
+termBody.addEventListener("keydown", handleKey);
+
+terminalInput.addEventListener("keydown", (e) => {
+
+    handleKey(e);
+
+    requestAnimationFrame(() => {
+        terminalInput.value = currentInput;
+    });
+
 });
+
 function executeCommand(cmd) {
 
     // Remove old cursor
@@ -1228,8 +1241,13 @@ function resetTerminal() {
 }
 
 termBody.addEventListener("click", () => {
-    terminalInput.focus();
-    terminalInput.value = "";
+
+    if ("ontouchstart" in window) {
+        terminalInput.focus();
+    } else {
+        termBody.focus();
+    }
+
 });
 
 terminalInput.addEventListener("input", () => {
