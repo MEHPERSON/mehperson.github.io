@@ -880,7 +880,13 @@
       
       resetIdleTimer();
 
-      requestAnimationFrame(() => termBody.focus());
+      requestAnimationFrame(() => {
+    if ("ontouchstart" in window) {
+        terminalInput.focus({ preventScroll: true });
+    } else {
+        termBody.focus({ preventScroll: true });
+    }
+      });
 
       return;
     }
@@ -1124,7 +1130,11 @@ function executeCommand(cmd) {
       }
 
     newPrompt();
-    termBody.focus();
+    if ("ontouchstart" in window) {
+    terminalInput.focus({ preventScroll: true });
+      } else {
+    termBody.focus({ preventScroll: true });
+      }
 
 }
 function printOutput(text, color = "") {
@@ -1223,7 +1233,13 @@ function newPrompt() {
 
     currentCmd = line.querySelector(".t-cmd");
     currentInput = "";
-    requestAnimationFrame(() => termBody.focus());
+    requestAnimationFrame(() => {
+    if ("ontouchstart" in window) {
+        terminalInput.focus({ preventScroll: true });
+    } else {
+        termBody.focus({ preventScroll: true });
+    }
+});
     termBody.scrollTop = termBody.scrollHeight;
 
 }
