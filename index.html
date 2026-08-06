@@ -1139,6 +1139,14 @@ function executeCommand(cmd) {
         printOutput('Type "help" for available commands.');
       }
 
+    newPrompt();
+    if ("ontouchstart" in window) {
+    terminalInput.focus({ preventScroll: true });
+      } else {
+    termBody.focus({ preventScroll: true });
+      }
+
+}
 function printOutput(text, color = "") {
 
 
@@ -1294,8 +1302,7 @@ function resetIdleTimer() {
     idleTimer = setTimeout(resetTerminal, IDLE_TIMEOUT);
 }
 
-
-
+  // Start everything
   applyTheme();
   setTimeout(typeNext, 400);
 </script>
