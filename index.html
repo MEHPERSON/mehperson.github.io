@@ -1240,7 +1240,9 @@ function newPrompt() {
         termBody.focus({ preventScroll: true });
     }
 });
+    if (!("ontouchstart" in window)) {
     termBody.scrollTop = termBody.scrollHeight;
+}
 
 }
 function resetIdleTimer() {
