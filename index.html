@@ -243,6 +243,7 @@
       height: 300px;      
       overflow-y: auto;  
     }
+
     .terminal-body::-webkit-scrollbar {
       width: 6px;
     }
@@ -258,6 +259,14 @@
 
     .terminal-body::-webkit-scrollbar-thumb:hover {
       background: rgba(180, 233, 255, 0.45);
+    }
+
+    #terminal-input {
+      position: fixed;
+      left: -9999px;
+      top: 0;
+      opacity: 0;
+      pointer-events: none;
     }
 
     .t-line { display: flex; gap: 8px; }
@@ -637,8 +646,17 @@
         <span class="dot dot-g"></span>
         <span class="terminal-title">mehperson ~ bash</span>
       </div>
+
       <div class="terminal-body" id="term-body" tabindex="0"></div>
     </div>
+
+     <input
+        id="terminal-input"
+        type="text"
+        autocomplete="off"
+        autocorrect="off"
+        autocapitalize="off"
+        spellcheck="false">
 
   </div>
 
@@ -827,6 +845,7 @@
   ];
 
   const termBody = document.getElementById('term-body');
+  const terminalInput = document.getElementById("terminal-input");
   let lineIdx = 0, charIdx = 0;
 
   function typeNext() {
@@ -1207,6 +1226,10 @@ function resetTerminal() {
 
     typeNext();
 }
+
+termBody.addEventListener("click", () => {
+    terminalInput.focus();
+});
 
   // Start everything
   applyTheme();
