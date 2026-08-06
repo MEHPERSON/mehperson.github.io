@@ -1229,7 +1229,17 @@ function resetTerminal() {
 
 termBody.addEventListener("click", () => {
     terminalInput.focus();
+    terminalInput.value = "";
 });
+
+terminalInput.addEventListener("input", () => {
+
+    currentInput = terminalInput.value;
+    currentCmd.textContent = currentInput;
+
+});
+
+
 
   // Start everything
   applyTheme();
