@@ -1019,6 +1019,12 @@ function handleKey(e) {
 
 }
 
+termBody.addEventListener("focus", () => clearTimeout(idleTimer));
+terminalInput.addEventListener("focus", () => clearTimeout(idleTimer));
+
+termBody.addEventListener("blur", resetIdleTimer);
+terminalInput.addEventListener("blur", resetIdleTimer);
+
 termBody.addEventListener("keydown", handleKey);
 
 terminalInput.addEventListener("keydown", (e) => {
@@ -1243,9 +1249,9 @@ function resetTerminal() {
 termBody.addEventListener("click", () => {
 
     if ("ontouchstart" in window) {
-        terminalInput.focus();
+        terminalInput.focus({ preventScroll: true });
     } else {
-        termBody.focus();
+        termBody.focus({ preventScroll: true });
     }
 
 });
@@ -1257,7 +1263,17 @@ terminalInput.addEventListener("input", () => {
 
 });
 
+function resetIdleTimer() {
 
+    clearTimeout(idleTimer);
+
+    if (document.activeElement === termBody ||
+        document.activeElement === terminalInput) {
+        return;
+    }
+
+    idleTimer = setTimeout(resetTerminal, IDLE_TIMEOUT);
+}
 
   // Start everything
   applyTheme();
