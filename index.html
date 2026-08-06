@@ -235,13 +235,13 @@
     }
 
     .terminal-body {
-      padding: 20px;
+      padding: 20px 20px 120px;
       display: flex;
       flex-direction: column;
       gap: 4px;
       line-height: 1.7;
-      height: 300px;      
-      overflow-y: auto;  
+      height: 300px;
+      overflow-y: auto;
     }
 
     .terminal-body::-webkit-scrollbar {
@@ -265,7 +265,12 @@
       position: fixed;
       left: -9999px;
       top: 0;
+
+      width: 1px;
+      height: 1px;
+
       opacity: 0;
+      border: 0;
       pointer-events: none;
     }
 
@@ -1241,7 +1246,12 @@ function newPrompt() {
     }
 });
     if (!("ontouchstart" in window)) {
-    termBody.scrollTop = termBody.scrollHeight;
+    requestAnimationFrame(() => {
+    termBody.scrollTo({
+        top: termBody.scrollHeight,
+        behavior: "smooth"
+    });
+});
 }
 
 }
@@ -1291,6 +1301,18 @@ function resetIdleTimer() {
     }
 
     idleTimer = setTimeout(resetTerminal, IDLE_TIMEOUT);
+}
+
+const vv = window.visualViewport;
+
+if (vv) {
+    vv.addEventListener("resize", () => {
+        window.scrollTo(0, 0);
+    });
+
+    vv.addEventListener("scroll", () => {
+        window.scrollTo(0, 0);
+    });
 }
 
   // Start everything
